@@ -14,14 +14,35 @@ const EMOJIS = [
 
 const CATEGORIES: FoodCategory[] = ['fruit','veggie','protein','grain','dairy','snack','other']
 
+const CATEGORY_DEFAULT_EMOJI: Record<FoodCategory, string> = {
+  fruit:   '🍎',
+  veggie:  '🥦',
+  protein: '🥩',
+  grain:   '🍞',
+  dairy:   '🧀',
+  snack:   '🍿',
+  other:   '🍽️',
+}
+
 interface AddFoodFormProps { onAdded: () => void }
 
 export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
-  const [name,     setName]     = useState('')
-  const [emoji,    setEmoji]    = useState('🍎')
-  const [category, setCategory] = useState<FoodCategory>('fruit')
-  const [open,     setOpen]     = useState(false)
-  const [shake,    setShake]    = useState(false)
+  const [name,          setName]          = useState('')
+  const [emoji,         setEmoji]         = useState(CATEGORY_DEFAULT_EMOJI['fruit'])
+  const [emojiManual,   setEmojiManual]   = useState(false)  // true once user picks manually
+  const [category,      setCategory]      = useState<FoodCategory>('fruit')
+  const [open,          setOpen]          = useState(false)
+  const [shake,         setShake]         = useState(false)
+
+  const handleCategoryChange = (c: FoodCategory) => {
+    setCategory(c)
+    if (!emojiManual) setEmoji(CATEGORY_DEFAULT_EMOJI[c])
+  }
+
+  const handleEmojiPick = (e: string) => {
+    setEmoji(e)
+    setEmojiManual(true)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,7 +62,8 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
     }
     addFood(food)
     setName('')
-    setEmoji('🍎')
+    setEmojiManual(false)
+    setEmoji(CATEGORY_DEFAULT_EMOJI['fruit'])
     setCategory('fruit')
     setOpen(false)
     onAdded()
@@ -88,7 +110,7 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
                 <button
                   key={e}
                   type="button"
-                  onClick={() => setEmoji(e)}
+                  onClick={() => handleEmojiPick(e)}
                   className={[
                     'text-2xl p-1 rounded-xl transition-all duration-150 min-h-[44px] min-w-[44px]',
                     'hover:scale-125 active:scale-90',
@@ -111,7 +133,7 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
                 <button
                   key={c}
                   type="button"
-                  onClick={() => setCategory(c)}
+                  onClick={() => handleCategoryChange(c)}
                   className={[
                     'px-4 py-1.5 rounded-full font-body font-bold capitalize text-sm',
                     'border-2 transition-all duration-150 min-h-[44px]',
