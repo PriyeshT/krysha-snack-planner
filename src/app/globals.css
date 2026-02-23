@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+
+:root {
+  --background: #fdf4ff;
+  --foreground: #3b0764;
+}
+
+body {
+  color: var(--foreground);
+  background: linear-gradient(135deg, #fdf4ff 0%, #fce7f3 25%, #ede9fe 50%, #dbeafe 75%, #ecfdf5 100%);
+  background-attachment: fixed;
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+}
+
+/* Remove dark mode override — keep magical pastels always */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(135deg, #1e003f 0%, #3b0764 25%, #1e1b4b 50%, #0c1a40 75%, #042f1e 100%);
+    background-attachment: fixed;
+    color: #f3e8ff;
+  }
+}
+
+/* Shimmer utility */
+@layer utilities {
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  .shimmer-gold {
+    background: linear-gradient(
+      90deg,
+      #f59e0b 0%,
+      #fde68a 40%,
+      #fcd34d 60%,
+      #f59e0b 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .card-magic {
+    @apply rounded-3xl shadow-lg border-2 transition-all duration-300;
+  }
+
+  .card-magic:hover {
+    @apply shadow-2xl -translate-y-1;
+  }
+
+  .sparkle-bg {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sparkle-bg::before {
+    content: '✨';
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    font-size: 1.2rem;
+    animation: sparkle 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
+/* Page padding to account for bottom nav on mobile */
+.page-content {
+  padding-bottom: 5rem;
+}
+
+@media (min-width: 768px) {
+  .page-content {
+    padding-bottom: 1rem;
+  }
+}

@@ -1,0 +1,103 @@
+'use client'
+
+import { SnackCombo, Recipe, NewFood } from '@/lib/types'
+
+// ── Snack Pack ────────────────────────────────────────────────────────────────
+export function SnackComboCard({ combo, index }: { combo: SnackCombo; index: number }) {
+  const gradients = [
+    'from-castle-purple-pale to-castle-pink-pale border-castle-pink-light',
+    'from-castle-gold-light/30 to-castle-cream border-castle-gold',
+    'from-blue-50 to-castle-teal/10 border-castle-teal',
+    'from-castle-pink-pale to-castle-purple-pale border-castle-purple-light',
+  ]
+
+  return (
+    <div
+      style={{ animationDelay: `${index * 120}ms`, animationFillMode: 'both' }}
+      className={`animate-fadeInUp card-magic bg-gradient-to-br ${gradients[index % gradients.length]} p-5`}
+    >
+      <h3 className="font-magic text-xl text-castle-purple mb-3">{combo.name}</h3>
+      <ul className="space-y-1 mb-3">
+        {combo.items.map((item, i) => (
+          <li key={i} className="font-body text-base flex items-start gap-2">
+            <span className="text-castle-gold mt-0.5">✦</span>
+            {item}
+          </li>
+        ))}
+      </ul>
+      <p className="font-body text-sm text-castle-purple/70 italic">{combo.whyItsYummy}</p>
+    </div>
+  )
+}
+
+// ── Cook Together ─────────────────────────────────────────────────────────────
+export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
+  return (
+    <div
+      style={{ animationDelay: `${index * 140}ms`, animationFillMode: 'both' }}
+      className="animate-fadeInUp card-magic bg-gradient-to-br from-castle-gold-light/30 to-castle-cream border-castle-gold p-5"
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <span className="text-4xl animate-float" style={{ animationDelay: `${index * 200}ms` }}>
+          {recipe.emoji}
+        </span>
+        <h3 className="font-magic text-xl text-castle-purple">{recipe.name}</h3>
+      </div>
+
+      <div className="mb-3">
+        <p className="font-body font-bold text-sm text-castle-purple mb-1">🧺 You need:</p>
+        <ul className="space-y-0.5 pl-4">
+          {recipe.ingredients.map((ing, i) => (
+            <li key={i} className="font-body text-sm list-disc text-gray-700">{ing}</li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mb-3">
+        <p className="font-body font-bold text-sm text-castle-purple mb-1">👩‍🍳 How to make it:</p>
+        <ol className="space-y-1 pl-4">
+          {recipe.steps.map((step, i) => (
+            <li key={i} className="font-body text-sm list-decimal text-gray-700">{step}</li>
+          ))}
+        </ol>
+      </div>
+
+      <div className="mt-3 bg-white/60 rounded-xl p-3">
+        <p className="font-body text-sm text-castle-teal font-semibold">🌟 Fun fact: {recipe.funFact}</p>
+      </div>
+    </div>
+  )
+}
+
+// ── Try New Food ──────────────────────────────────────────────────────────────
+export function NewFoodCard({ food, index }: { food: NewFood; index: number }) {
+  const gradients = [
+    'from-castle-pink-pale to-castle-purple-pale border-castle-pink',
+    'from-castle-teal/10 to-blue-50 border-castle-teal',
+    'from-castle-gold-light/30 to-castle-cream border-castle-gold',
+  ]
+
+  return (
+    <div
+      style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'both' }}
+      className={`animate-fadeInUp card-magic bg-gradient-to-br ${gradients[index % gradients.length]} p-5`}
+    >
+      <div className="flex items-center gap-3 mb-3">
+        <span className="text-4xl animate-sparkle">{food.emoji}</span>
+        <div>
+          <h3 className="font-magic text-xl text-castle-purple">{food.name}</h3>
+          <span className="text-xs font-body text-castle-purple/60 capitalize">{food.category}</span>
+        </div>
+      </div>
+
+      <div className="space-y-2 font-body text-sm text-gray-700">
+        <p><span className="font-bold text-castle-pink">🌺 Why try it?</span> {food.whyTryIt}</p>
+        <p><span className="font-bold text-castle-gold">👅 It tastes:</span> {food.tastes}</p>
+        <div className="bg-white/70 rounded-xl p-3 mt-2">
+          <p className="font-bold text-castle-purple mb-1">🎯 Krysha&apos;s Challenge:</p>
+          <p>{food.challenge}</p>
+        </div>
+      </div>
+    </div>
+  )
+}
