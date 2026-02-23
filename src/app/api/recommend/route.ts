@@ -87,9 +87,11 @@ function stripFences(text: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  let fairyName = 'Pixie'
   try {
     const body: RecommendRequest = await req.json()
-    const { type, foods, fairyName = 'Pixie' } = body
+    fairyName = body.fairyName || 'Pixie'
+    const { type, foods } = body
 
     if (!type || !Array.isArray(foods)) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
@@ -118,7 +120,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data)
   } catch (err) {
     console.error('Fairy error:', err)
-    const { fairyName = 'Pixie' } = await req.json().catch(() => ({}))
     return NextResponse.json(
       {
         greeting:    `✨ Oops! ${fairyName} got her wings tangled! 🧚`,
