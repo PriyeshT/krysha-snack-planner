@@ -2,19 +2,23 @@
 
 import { useEffect, useState } from 'react'
 import { FoodItem, TryNewResponse } from '@/lib/types'
-import { getFoods } from '@/lib/storage'
+import { getFoods, getFairyName } from '@/lib/storage'
 import MagicButton from '@/components/MagicButton'
 import { NewFoodCard } from '@/components/RecommendationCard'
 
 export default function TryNewPage() {
-  const [foods,   setFoods]   = useState<FoodItem[]>([])
-  const [result,  setResult]  = useState<TryNewResponse | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState('')
+  const [foods,     setFoods]     = useState<FoodItem[]>([])
+  const [fairyName, setFairyName] = useState('Pixie')
+  const [result,    setResult]    = useState<TryNewResponse | null>(null)
+  const [loading,   setLoading]   = useState(false)
+  const [error,     setError]     = useState('')
 
-  useEffect(() => { setFoods(getFoods()) }, [])
+  useEffect(() => {
+    setFoods(getFoods())
+    setFairyName(getFairyName())
+  }, [])
 
-  const askPixie = async () => {
+  const askFairy = async () => {
     setLoading(true)
     setError('')
     setResult(null)
@@ -22,12 +26,12 @@ export default function TryNewPage() {
       const res = await fetch('/api/recommend', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ type: 'try-new', foods }),
+        body:    JSON.stringify({ type: 'try-new', foods, fairyName }),
       })
       const data: TryNewResponse = await res.json()
       setResult(data)
     } catch {
-      setError('Pixie flew too far into the enchanted forest! Try again 🌲✨')
+      setError(`${fairyName} flew too far into the enchanted forest! Try again 🌲✨`)
     } finally {
       setLoading(false)
     }
@@ -35,16 +39,14 @@ export default function TryNewPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center">
         <div className="text-6xl mb-2 animate-sparkle">🌟</div>
         <h1 className="font-magic text-4xl text-castle-purple">Try Something New!</h1>
         <p className="font-body text-castle-purple/70 mt-1">
-          Pixie found amazing new foods just for Krysha! 🧚‍♀️
+          {fairyName} found amazing new foods just for Krysha! 🧚‍♀️
         </p>
       </div>
 
-      {/* Foods context (always show even with 0) */}
       {foods.length > 0 && (
         <div className="card-magic bg-white border-castle-pink-light p-4">
           <p className="font-body font-bold text-castle-purple mb-2">
@@ -66,13 +68,13 @@ export default function TryNewPage() {
       {foods.length === 0 && (
         <div className="card-magic bg-castle-pink-pale border-castle-pink-light p-4 text-center">
           <p className="font-body text-castle-purple/70">
-            🌈 No favourites yet? No problem! Pixie will suggest amazing foods to discover!
+            🌈 No favourites yet? No problem! {fairyName} will suggest amazing foods to discover!
           </p>
         </div>
       )}
 
-      <MagicButton onClick={askPixie} loading={loading} fullWidth variant="secondary">
-        🧚 Discover New Foods with Pixie!
+      <MagicButton onClick={askFairy} loading={loading} fullWidth variant="secondary">
+        🧚 Discover New Foods with {fairyName}!
       </MagicButton>
 
       {error && (
@@ -84,7 +86,7 @@ export default function TryNewPage() {
       {result && (
         <div className="space-y-4 animate-fadeInUp">
           <div className="card-magic bg-gradient-to-r from-castle-pink to-castle-purple p-4 text-white text-center">
-            <p className="font-magic text-xl">🌟 Pixie&apos;s Adventure Picks! 🌟</p>
+            <p className="font-magic text-xl">🌟 {fairyName}&apos;s Adventure Picks! 🌟</p>
             <p className="font-body mt-1">{result.greeting}</p>
           </div>
 
@@ -102,8 +104,8 @@ export default function TryNewPage() {
             </div>
           )}
 
-          <MagicButton onClick={askPixie} loading={loading} fullWidth>
-            🔮 Find More New Foods!
+          <MagicButton onClick={askFairy} loading={loading} fullWidth>
+            🔮 Find More New Foods with {fairyName}!
           </MagicButton>
         </div>
       )}

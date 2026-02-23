@@ -39,3 +39,16 @@ export function deleteFood(id: string): void {
 export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
 }
+
+const FAIRY_KEY = 'krysha_fairy_name_v1'
+const DEFAULT_FAIRY_NAME = 'Pixie'
+
+export function getFairyName(): string {
+  if (!isClient()) return DEFAULT_FAIRY_NAME
+  return localStorage.getItem(FAIRY_KEY) || DEFAULT_FAIRY_NAME
+}
+
+export function saveFairyName(name: string): void {
+  if (!isClient()) return
+  localStorage.setItem(FAIRY_KEY, name.trim() || DEFAULT_FAIRY_NAME)
+}

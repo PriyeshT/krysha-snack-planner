@@ -4,7 +4,9 @@ import { RecommendRequest, FoodItem } from '@/lib/types'
 
 const client = new Anthropic()
 
-const PIXIE_SYSTEM = `You are Pixie, a magical snack fairy who lives in Krysha's Snack Kingdom! You help a 5-year-old girl named Krysha and her daddy plan healthy, yummy snacks. Use simple words, 1–3 emojis per sentence, celebrate every food choice. Always respond with ONLY valid JSON matching the exact schema requested. No markdown, no code fences, just raw JSON.`
+function buildSystem(fairyName: string): string {
+  return `You are ${fairyName}, a magical snack fairy who lives in Krysha's Snack Kingdom! You help a 5-year-old girl named Krysha and her daddy plan healthy, yummy snacks. Use simple words, 1–3 emojis per sentence, celebrate every food choice. Always respond with ONLY valid JSON matching the exact schema requested. No markdown, no code fences, just raw JSON.`
+}
 
 function foodList(foods: FoodItem[]): string {
   return foods
@@ -12,7 +14,7 @@ function foodList(foods: FoodItem[]): string {
     .join('\n')
 }
 
-function snackPackPrompt(foods: FoodItem[]): string {
+function snackPackPrompt(foods: FoodItem[], fairyName: string): string {
   return `Krysha has these favourite foods:
 ${foodList(foods)}
 
@@ -20,7 +22,7 @@ Create 3–5 fun school snack packs using combinations of these foods (or health
 
 Respond with ONLY this JSON (no markdown):
 {
-  "greeting": "A magical 1-2 sentence greeting from Pixie celebrating Krysha's food choices",
+  "greeting": "A magical 1-2 sentence greeting from ${fairyName} celebrating Krysha's food choices",
   "combos": [
     {
       "name": "Fun pack name e.g. Rainbow Power Pack",
@@ -32,7 +34,7 @@ Respond with ONLY this JSON (no markdown):
 }`
 }
 
-function cookTogetherPrompt(foods: FoodItem[]): string {
+function cookTogetherPrompt(foods: FoodItem[], fairyName: string): string {
   return `Krysha has these favourite foods:
 ${foodList(foods)}
 
@@ -40,7 +42,7 @@ Create 2–3 simple recipes a 5-year-old and daddy can make together using these
 
 Respond with ONLY this JSON (no markdown):
 {
-  "greeting": "A magical 1-2 sentence greeting from Pixie",
+  "greeting": "A magical 1-2 sentence greeting from ${fairyName}",
   "recipes": [
     {
       "name": "Recipe name",
@@ -54,7 +56,7 @@ Respond with ONLY this JSON (no markdown):
 }`
 }
 
-function tryNewPrompt(foods: FoodItem[]): string {
+function tryNewPrompt(foods: FoodItem[], fairyName: string): string {
   const existing = foods.map(f => f.name).join(', ') || 'none yet'
   return `Krysha already loves: ${existing}.
 
@@ -62,7 +64,7 @@ Suggest 3 new healthy foods Krysha might enjoy based on what she likes. They sho
 
 Respond with ONLY this JSON (no markdown):
 {
-  "greeting": "A magical 1-2 sentence greeting from Pixie",
+  "greeting": "A magical 1-2 sentence greeting from ${fairyName}",
   "newFoods": [
     {
       "name": "Food name",
@@ -87,7 +89,7 @@ function stripFences(text: string): string {
 export async function POST(req: NextRequest) {
   try {
     const body: RecommendRequest = await req.json()
-    const { type, foods } = body
+    const { type, foods, fairyName = 'Pixie' } = body
 
     if (!type || !Array.isArray(foods)) {
       return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
@@ -95,9 +97,9 @@ export async function POST(req: NextRequest) {
 
     let userPrompt: string
     switch (type) {
-      case 'snack-pack':    userPrompt = snackPackPrompt(foods);    break
-      case 'cook-together': userPrompt = cookTogetherPrompt(foods); break
-      case 'try-new':       userPrompt = tryNewPrompt(foods);       break
+      case 'snack-pack':    userPrompt = snackPackPrompt(foods, fairyName);    break
+      case 'cook-together': userPrompt = cookTogetherPrompt(foods, fairyName); break
+      case 'try-new':       userPrompt = tryNewPrompt(foods, fairyName);       break
       default:
         return NextResponse.json({ error: 'Unknown type' }, { status: 400 })
     }
@@ -105,7 +107,7 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model:      'claude-haiku-4-5-20251001',
       max_tokens: 1024,
-      system:     PIXIE_SYSTEM,
+      system:     buildSystem(fairyName),
       messages:   [{ role: 'user', content: userPrompt }],
     })
 
@@ -115,12 +117,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(data)
   } catch (err) {
-    console.error('Pixie error:', err)
+    console.error('Fairy error:', err)
+    const { fairyName = 'Pixie' } = await req.json().catch(() => ({}))
     return NextResponse.json(
       {
-        greeting:    '✨ Oops! Pixie got her wings tangled! 🧚',
+        greeting:    `✨ Oops! ${fairyName} got her wings tangled! 🧚`,
         error:       true,
-        closingNote: 'Please try again in a moment! Pixie is fixing her wand! 🪄',
+        closingNote: `Please try again in a moment! ${fairyName} is fixing her wand! 🪄`,
       },
       { status: 500 },
     )

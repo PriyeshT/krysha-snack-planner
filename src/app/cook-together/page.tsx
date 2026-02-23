@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from 'react'
 import { FoodItem, CookTogetherResponse } from '@/lib/types'
-import { getFoods } from '@/lib/storage'
+import { getFoods, getFairyName } from '@/lib/storage'
 import MagicButton from '@/components/MagicButton'
 import { RecipeCard } from '@/components/RecommendationCard'
 import Link from 'next/link'
 
 export default function CookTogetherPage() {
-  const [foods,   setFoods]   = useState<FoodItem[]>([])
-  const [result,  setResult]  = useState<CookTogetherResponse | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error,   setError]   = useState('')
+  const [foods,     setFoods]     = useState<FoodItem[]>([])
+  const [fairyName, setFairyName] = useState('Pixie')
+  const [result,    setResult]    = useState<CookTogetherResponse | null>(null)
+  const [loading,   setLoading]   = useState(false)
+  const [error,     setError]     = useState('')
 
-  useEffect(() => { setFoods(getFoods()) }, [])
+  useEffect(() => {
+    setFoods(getFoods())
+    setFairyName(getFairyName())
+  }, [])
 
-  const askPixie = async () => {
+  const askFairy = async () => {
     setLoading(true)
     setError('')
     setResult(null)
@@ -23,12 +27,12 @@ export default function CookTogetherPage() {
       const res = await fetch('/api/recommend', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ type: 'cook-together', foods }),
+        body:    JSON.stringify({ type: 'cook-together', foods, fairyName }),
       })
       const data: CookTogetherResponse = await res.json()
       setResult(data)
     } catch {
-      setError('Pixie accidentally turned the recipe into glitter! Try again 🌟')
+      setError(`${fairyName} accidentally turned the recipe into glitter! Try again 🌟`)
     } finally {
       setLoading(false)
     }
@@ -36,7 +40,6 @@ export default function CookTogetherPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center">
         <div className="text-6xl mb-2 animate-float">👩‍🍳</div>
         <h1 className="font-magic text-4xl text-castle-purple">Cook Together!</h1>
@@ -52,7 +55,7 @@ export default function CookTogetherPage() {
             The kitchen needs ingredients!
           </p>
           <p className="font-body text-castle-purple/70 mb-5">
-            Add your favourite foods first so Pixie can create amazing recipes!
+            Add your favourite foods first so {fairyName} can create amazing recipes!
           </p>
           <Link href="/favorites">
             <MagicButton variant="secondary">⭐ Add My Favourites!</MagicButton>
@@ -62,7 +65,7 @@ export default function CookTogetherPage() {
         <>
           <div className="card-magic bg-white border-castle-gold p-4">
             <p className="font-body font-bold text-castle-purple mb-2">
-              🧺 Pixie will cook with your {foods.length} favourite food{foods.length !== 1 ? 's' : ''}:
+              🧺 {fairyName} will cook with your {foods.length} favourite food{foods.length !== 1 ? 's' : ''}:
             </p>
             <div className="flex flex-wrap gap-2">
               {foods.map(f => (
@@ -76,8 +79,8 @@ export default function CookTogetherPage() {
             </div>
           </div>
 
-          <MagicButton onClick={askPixie} loading={loading} fullWidth variant="secondary">
-            🧚 Get Magical Recipes!
+          <MagicButton onClick={askFairy} loading={loading} fullWidth variant="secondary">
+            🧚 Get Magical Recipes from {fairyName}!
           </MagicButton>
 
           {error && (
@@ -89,7 +92,7 @@ export default function CookTogetherPage() {
           {result && (
             <div className="space-y-4 animate-fadeInUp">
               <div className="card-magic bg-gradient-to-r from-castle-gold to-castle-teal p-4 text-white text-center">
-                <p className="font-magic text-xl">🍳 Pixie&apos;s Kitchen Says… 🍳</p>
+                <p className="font-magic text-xl">🍳 {fairyName}&apos;s Kitchen Says… 🍳</p>
                 <p className="font-body mt-1">{result.greeting}</p>
               </div>
 
@@ -107,8 +110,8 @@ export default function CookTogetherPage() {
                 </div>
               )}
 
-              <MagicButton onClick={askPixie} loading={loading} fullWidth>
-                🔮 Get More Recipes!
+              <MagicButton onClick={askFairy} loading={loading} fullWidth>
+                🔮 Get More Recipes from {fairyName}!
               </MagicButton>
             </div>
           )}

@@ -2,20 +2,24 @@
 
 import { useEffect, useState } from 'react'
 import { FoodItem, SnackPackResponse } from '@/lib/types'
-import { getFoods } from '@/lib/storage'
+import { getFoods, getFairyName } from '@/lib/storage'
 import MagicButton from '@/components/MagicButton'
 import { SnackComboCard } from '@/components/RecommendationCard'
 import Link from 'next/link'
 
 export default function SnackPackPage() {
-  const [foods,    setFoods]    = useState<FoodItem[]>([])
-  const [result,   setResult]   = useState<SnackPackResponse | null>(null)
-  const [loading,  setLoading]  = useState(false)
-  const [error,    setError]    = useState('')
+  const [foods,      setFoods]      = useState<FoodItem[]>([])
+  const [fairyName,  setFairyName]  = useState('Pixie')
+  const [result,     setResult]     = useState<SnackPackResponse | null>(null)
+  const [loading,    setLoading]    = useState(false)
+  const [error,      setError]      = useState('')
 
-  useEffect(() => { setFoods(getFoods()) }, [])
+  useEffect(() => {
+    setFoods(getFoods())
+    setFairyName(getFairyName())
+  }, [])
 
-  const askPixie = async () => {
+  const askFairy = async () => {
     setLoading(true)
     setError('')
     setResult(null)
@@ -23,12 +27,12 @@ export default function SnackPackPage() {
       const res = await fetch('/api/recommend', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ type: 'snack-pack', foods }),
+        body:    JSON.stringify({ type: 'snack-pack', foods, fairyName }),
       })
       const data: SnackPackResponse = await res.json()
       setResult(data)
     } catch {
-      setError('Pixie got distracted by a rainbow! Please try again 🌈')
+      setError(`${fairyName} got distracted by a rainbow! Please try again 🌈`)
     } finally {
       setLoading(false)
     }
@@ -36,16 +40,14 @@ export default function SnackPackPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="text-center">
         <div className="text-6xl mb-2 animate-float">🎒</div>
         <h1 className="font-magic text-4xl text-castle-purple">Snack Pack Magic!</h1>
         <p className="font-body text-castle-purple/70 mt-1">
-          Pixie will pack the BEST snacks for school!
+          {fairyName} will pack the BEST snacks for school!
         </p>
       </div>
 
-      {/* No foods state */}
       {foods.length === 0 ? (
         <div className="card-magic bg-castle-purple-pale border-castle-purple-light p-8 text-center">
           <p className="text-5xl mb-3 animate-bounce_magic">🌟</p>
@@ -53,7 +55,7 @@ export default function SnackPackPage() {
             Your kingdom needs food first!
           </p>
           <p className="font-body text-castle-purple/70 mb-5">
-            Add some of your favourite foods so Pixie knows what to pack!
+            Add some of your favourite foods so {fairyName} knows what to pack!
           </p>
           <Link href="/favorites">
             <MagicButton>⭐ Add My Favourites!</MagicButton>
@@ -61,10 +63,9 @@ export default function SnackPackPage() {
         </div>
       ) : (
         <>
-          {/* Current foods summary */}
           <div className="card-magic bg-white border-castle-purple-light p-4">
             <p className="font-body font-bold text-castle-purple mb-2">
-              🧺 Pixie will use your {foods.length} favourite food{foods.length !== 1 ? 's' : ''}:
+              🧺 {fairyName} will use your {foods.length} favourite food{foods.length !== 1 ? 's' : ''}:
             </p>
             <div className="flex flex-wrap gap-2">
               {foods.map(f => (
@@ -78,8 +79,8 @@ export default function SnackPackPage() {
             </div>
           </div>
 
-          <MagicButton onClick={askPixie} loading={loading} fullWidth variant="secondary">
-            🧚 Ask Pixie to Pack My Snacks!
+          <MagicButton onClick={askFairy} loading={loading} fullWidth variant="secondary">
+            🧚 Ask {fairyName} to Pack My Snacks!
           </MagicButton>
 
           {error && (
@@ -91,7 +92,7 @@ export default function SnackPackPage() {
           {result && (
             <div className="space-y-4 animate-fadeInUp">
               <div className="card-magic bg-gradient-to-r from-castle-purple to-castle-pink p-4 text-white text-center">
-                <p className="font-magic text-xl">✨ Pixie says… ✨</p>
+                <p className="font-magic text-xl">✨ {fairyName} says… ✨</p>
                 <p className="font-body mt-1">{result.greeting}</p>
               </div>
 
@@ -109,8 +110,8 @@ export default function SnackPackPage() {
                 </div>
               )}
 
-              <MagicButton onClick={askPixie} loading={loading} fullWidth>
-                🔮 Ask Pixie Again!
+              <MagicButton onClick={askFairy} loading={loading} fullWidth>
+                🔮 Ask {fairyName} Again!
               </MagicButton>
             </div>
           )}

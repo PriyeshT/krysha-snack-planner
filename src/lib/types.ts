@@ -19,8 +19,9 @@ export interface FoodItem {
 export type RecommendationType = 'snack-pack' | 'cook-together' | 'try-new'
 
 export interface RecommendRequest {
-  type:  RecommendationType
-  foods: FoodItem[]
+  type:       RecommendationType
+  foods:      FoodItem[]
+  fairyName?: string
 }
 
 // ── Snack Pack ────────────────────────────────────────────────────────────────
