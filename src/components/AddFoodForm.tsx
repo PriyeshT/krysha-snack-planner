@@ -71,7 +71,7 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
               placeholder="e.g. Apple, Cheese, Carrot…"
               className={[
                 'w-full rounded-2xl border-2 border-castle-purple-light',
-                'px-4 py-2 font-body text-lg focus:outline-none focus:border-castle-purple',
+                'px-4 py-2 font-body text-lg text-black focus:outline-none focus:border-castle-purple',
                 'bg-white transition-all duration-200 min-h-[44px]',
                 shake ? 'animate-wiggle border-red-400' : '',
               ].join(' ')}
