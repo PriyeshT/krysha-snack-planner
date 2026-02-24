@@ -18,20 +18,43 @@ function snackPackPrompt(foods: FoodItem[], fairyName: string): string {
   return `Krysha has these favourite foods:
 ${foodList(foods)}
 
-Create 3–5 fun school snack packs using combinations of these foods (or healthy additions). Each pack should be balanced and exciting.
+A perfect school snack box for Krysha MUST include all 4 of these components:
+1. 🍎 FRUIT — at least one fresh fruit (e.g. apple, grapes, mango, banana)
+2. 💪 PROTEIN — something with protein (e.g. cheese, boiled egg, chicken strips, edamame, yogurt, hummus, nuts)
+3. 🥑 HEALTHY FAT — a source of healthy fat (e.g. avocado, nuts, seeds, cheese, nut butter, olive-oil crackers)
+4. 🫙 DIP — a dip or sauce to make it fun (e.g. hummus, yogurt dip, guacamole, peanut butter, tzatziki, cream cheese)
+
+Note: one food can cover multiple components (e.g. hummus = protein + healthy fat + dip; cheese = protein + healthy fat).
+
+STEP 1 — GAP ANALYSIS: Check Krysha's foods and identify which of the 4 components are NOT covered by any food in her list. Be generous — if a food could reasonably cover a component, count it.
+
+STEP 2 — COMBOS: Create 3 snack box combos using her foods. Each combo must satisfy all 4 components. If a component is missing from her list, substitute with a common Singapore-friendly item (note this in the items list).
 
 Respond with ONLY this JSON (no markdown):
 {
-  "greeting": "A magical 1-2 sentence greeting from ${fairyName} celebrating Krysha's food choices",
-  "combos": [
+  "greeting": "A magical 1-2 sentence greeting from ${fairyName}",
+  "gaps": [
     {
-      "name": "Fun pack name e.g. Rainbow Power Pack",
-      "items": ["emoji + food name", "emoji + food name"],
-      "whyItsYummy": "Short fun sentence about why this pack is amazing"
+      "component": "dip",
+      "message": "Short friendly message explaining Krysha has no dips yet (1 sentence)",
+      "suggestions": [
+        { "name": "Hummus", "emoji": "🫙", "category": "snack" },
+        { "name": "Peanut Butter", "emoji": "🥜", "category": "protein" }
+      ]
     }
   ],
-  "closingNote": "A magical 1-sentence encouragement for Krysha"
-}`
+  "combos": [
+    {
+      "name": "Fun pack name",
+      "items": ["🍎 Apple (fruit)", "🧀 Cheese (protein + healthy fat)", "🫙 Hummus (dip)"],
+      "whyItsYummy": "Short fun sentence"
+    }
+  ],
+  "closingNote": "A magical 1-sentence encouragement"
+}
+
+If there are NO gaps, "gaps" must be an empty array: [].
+Each gap's "suggestions" must have 2–3 items, Singapore-friendly and kid-approved.`
 }
 
 function cookTogetherPrompt(foods: FoodItem[], fairyName: string): string {

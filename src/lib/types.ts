@@ -26,13 +26,20 @@ export interface RecommendRequest {
 
 // ── Snack Pack ────────────────────────────────────────────────────────────────
 export interface SnackCombo {
-  name:        string   // e.g. "Rainbow Power Pack"
-  items:       string[] // e.g. ["🍎 Apple", "🧀 Cheese cubes"]
+  name:        string
+  items:       string[]
   whyItsYummy: string
+}
+
+export interface GapSuggestion {
+  component:   string   // "fruit" | "protein" | "healthy fat" | "dip"
+  message:     string   // friendly explanation of the gap
+  suggestions: { name: string; emoji: string; category: FoodCategory }[]
 }
 
 export interface SnackPackResponse {
   greeting:    string
+  gaps:        GapSuggestion[]  // empty array if no gaps
   combos:      SnackCombo[]
   closingNote: string
 }
