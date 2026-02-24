@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { FoodItem, SuggestedFood, SuggestFavoritesResponse, FoodCategory } from '@/lib/types'
 import { addFood, generateId, getFairyName } from '@/lib/storage'
+import { containsNut } from '@/lib/nuts'
 import MagicButton from './MagicButton'
 
 const CATEGORY_DEFAULT_EMOJI: Record<FoodCategory, string> = {
@@ -46,6 +47,8 @@ export default function SuggestionsPanel({ existingFoods, onAdded }: Suggestions
         }),
       })
       const data: SuggestFavoritesResponse = await res.json()
+      // Client-side safety net: strip any nut items that slipped through
+      data.suggestions = (data.suggestions ?? []).filter(s => !containsNut(s.name))
       setResult(data)
       setOpen(true)
     } catch {
@@ -116,6 +119,9 @@ export default function SuggestionsPanel({ existingFoods, onAdded }: Suggestions
       <p className="font-body text-sm text-castle-teal/70 mt-1">
         {fairyName} will suggest 20 foods perfect for Singapore families
       </p>
+      <span className="inline-flex items-center gap-1 mt-1 text-xs font-body font-bold text-red-600 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
+        🚫 Nut-free suggestions only
+      </span>
 
       {/* Refresh button when already open */}
       {open && result && !loading && (

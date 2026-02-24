@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { FoodCategory, FoodItem } from '@/lib/types'
 import { addFood, generateId } from '@/lib/storage'
+import { containsNut } from '@/lib/nuts'
 import MagicButton from './MagicButton'
 
 const EMOJIS = [
@@ -36,6 +37,7 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
   const [category,     setCategory]     = useState<FoodCategory>('fruit')
   const [pickerOpen,   setPickerOpen]   = useState(false)
   const [shake,        setShake]        = useState(false)
+  const [nutError,     setNutError]     = useState(false)
   const [justAdded,    setJustAdded]    = useState<JustAdded | null>(null)
   const nameRef = useRef<HTMLInputElement>(null)
 
@@ -61,6 +63,13 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
     if (!name.trim()) {
       setShake(true)
       setTimeout(() => setShake(false), 400)
+      nameRef.current?.focus()
+      return
+    }
+    if (containsNut(name)) {
+      setNutError(true)
+      setShake(true)
+      setTimeout(() => { setNutError(false); setShake(false) }, 3500)
       nameRef.current?.focus()
       return
     }
@@ -175,6 +184,19 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
                 ].join(' ')}
               />
             </div>
+
+            {/* Nut warning */}
+            {nutError && (
+              <div className="mt-2 animate-fadeInUp flex items-start gap-2 bg-red-50 border-2 border-red-300 rounded-2xl px-4 py-3">
+                <span className="text-xl flex-shrink-0">🚫</span>
+                <div>
+                  <p className="font-body font-bold text-red-700 text-sm">Nut-free school rule!</p>
+                  <p className="font-body text-red-600 text-sm">
+                    Krysha&apos;s school doesn&apos;t allow nut items in the snack box. Try sunflower seeds, pumpkin seeds, or hummus instead!
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Category */}

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { RecommendRequest, FoodItem } from '@/lib/types'
+import { NUT_FREE_PROMPT_RULE } from '@/lib/nuts'
 
 const client = new Anthropic()
 
 function buildSystem(fairyName: string): string {
-  return `You are ${fairyName}, a magical snack fairy who lives in Krysha's Snack Kingdom! You help a 5-year-old girl named Krysha and her daddy plan healthy, yummy snacks. Use simple words, 1–3 emojis per sentence, celebrate every food choice. Always respond with ONLY valid JSON matching the exact schema requested. No markdown, no code fences, just raw JSON.`
+  return `You are ${fairyName}, a magical snack fairy who lives in Krysha's Snack Kingdom! You help a 5-year-old girl named Krysha and her daddy plan healthy, yummy snacks. Use simple words, 1–3 emojis per sentence, celebrate every food choice. Always respond with ONLY valid JSON matching the exact schema requested. No markdown, no code fences, just raw JSON.
+${NUT_FREE_PROMPT_RULE}`
 }
 
 function foodList(foods: FoodItem[]): string {
@@ -18,11 +20,13 @@ function snackPackPrompt(foods: FoodItem[], fairyName: string): string {
   return `Krysha has these favourite foods:
 ${foodList(foods)}
 
+🚫 NUT-FREE: Krysha's school bans ALL nuts. Never include peanuts, peanut butter, almonds, cashews, walnuts, or any nut product in combos or gap suggestions.
+
 A perfect school snack box for Krysha MUST include all 4 of these components:
 1. 🍎 FRUIT — at least one fresh fruit (e.g. apple, grapes, mango, banana)
-2. 💪 PROTEIN — something with protein (e.g. cheese, boiled egg, chicken strips, edamame, yogurt, hummus, nuts)
-3. 🥑 HEALTHY FAT — a source of healthy fat (e.g. avocado, nuts, seeds, cheese, nut butter, olive-oil crackers)
-4. 🫙 DIP — a dip or sauce to make it fun (e.g. hummus, yogurt dip, guacamole, peanut butter, tzatziki, cream cheese)
+2. 💪 PROTEIN — something with protein (e.g. cheese, boiled egg, chicken strips, edamame, yogurt, hummus, seeds)
+3. 🥑 HEALTHY FAT — a source of healthy fat (e.g. avocado, sunflower seeds, pumpkin seeds, cheese, olive-oil crackers)
+4. 🫙 DIP — a dip or sauce (e.g. hummus, yogurt dip, guacamole, tzatziki, cream cheese) — NO peanut butter
 
 Note: one food can cover multiple components (e.g. hummus = protein + healthy fat + dip; cheese = protein + healthy fat).
 
@@ -39,7 +43,7 @@ Respond with ONLY this JSON (no markdown):
       "message": "Short friendly message explaining Krysha has no dips yet (1 sentence)",
       "suggestions": [
         { "name": "Hummus", "emoji": "🫙", "category": "snack" },
-        { "name": "Peanut Butter", "emoji": "🥜", "category": "protein" }
+        { "name": "Greek Yogurt Dip", "emoji": "🥛", "category": "dairy" }
       ]
     }
   ],
@@ -113,6 +117,8 @@ Krysha is a 5-year-old girl living in Singapore. Suggest exactly 20 healthy, kid
 - Local Singapore favourites (e.g. dragon fruit, rambutan, kai lan, tau kwa, edamame, cincau)
 - Common international foods available in Singapore
 - Healthy snacks popular with Singapore kids
+
+🚫 NUT-FREE SCHOOL RULE: Do NOT suggest peanuts, peanut butter, almonds, cashews, walnuts, or any nut product.
 
 Make sure NONE of the suggestions are already in Krysha's existing list above.
 
