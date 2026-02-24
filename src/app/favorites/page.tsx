@@ -87,9 +87,9 @@ export default function FavouritesPage() {
           </p>
         </div>
       ) : (
-        <div className="grid gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {filtered.map((food, i) => (
-            <FoodCard key={food.id} food={food} onMutate={refresh} animDelay={i * 80} />
+            <FoodCard key={food.id} food={food} onMutate={refresh} animDelay={i * 60} />
           ))}
         </div>
       )}

@@ -42,15 +42,15 @@ interface FoodCardProps {
 }
 
 export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProps) {
-  const [removing,      setRemoving]      = useState(false)
-  const [rateAnim,      setRateAnim]      = useState(false)
-  const [editing,       setEditing]       = useState(false)
-  const [editName,      setEditName]      = useState(food.name)
-  const [editCategory,  setEditCategory]  = useState<FoodCategory>(food.category)
-  const [editEmoji,     setEditEmoji]     = useState(food.emoji)
-  const [emojiManual,   setEmojiManual]   = useState(true)   // existing foods keep their emoji by default
-  const [pickerOpen,    setPickerOpen]    = useState(false)
-  const [editNutError,  setEditNutError]  = useState(false)
+  const [removing,     setRemoving]     = useState(false)
+  const [rateAnim,     setRateAnim]     = useState(false)
+  const [editing,      setEditing]      = useState(false)
+  const [editName,     setEditName]     = useState(food.name)
+  const [editCategory, setEditCategory] = useState<FoodCategory>(food.category)
+  const [editEmoji,    setEditEmoji]    = useState(food.emoji)
+  const [emojiManual,  setEmojiManual]  = useState(true)
+  const [pickerOpen,   setPickerOpen]   = useState(false)
+  const [editNutError, setEditNutError] = useState(false)
   const editNameRef = useRef<HTMLInputElement>(null)
 
   const handleRate = (rating: number) => {
@@ -59,14 +59,14 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
     setTimeout(() => { setRateAnim(false); onMutate() }, 350)
   }
 
-  const handlePantryToggle = () => {
-    updateFood(food.id, { inPantry: !food.inPantry })
-    onMutate()
-  }
-
   const handleDelete = () => {
     setRemoving(true)
     setTimeout(() => { deleteFood(food.id); onMutate() }, 350)
+  }
+
+  const handlePantryToggle = () => {
+    updateFood(food.id, { inPantry: !food.inPantry })
+    onMutate()
   }
 
   const openEdit = () => {
@@ -80,11 +80,7 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
     setTimeout(() => editNameRef.current?.focus(), 50)
   }
 
-  const cancelEdit = () => {
-    setEditing(false)
-    setPickerOpen(false)
-    setEditNutError(false)
-  }
+  const cancelEdit = () => { setEditing(false); setPickerOpen(false); setEditNutError(false) }
 
   const handleCategoryChange = (c: FoodCategory) => {
     setEditCategory(c)
@@ -92,11 +88,7 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
     setPickerOpen(false)
   }
 
-  const handleEmojiPick = (e: string) => {
-    setEditEmoji(e)
-    setEmojiManual(true)
-    setPickerOpen(false)
-  }
+  const handleEmojiPick = (e: string) => { setEditEmoji(e); setEmojiManual(true); setPickerOpen(false) }
 
   const saveEdit = () => {
     const trimmed = editName.trim()
@@ -118,15 +110,15 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
     if (e.key === 'Escape') { e.preventDefault(); cancelEdit() }
   }
 
+  // ── Edit mode — spans full row so the form has room ───────────────────────
   if (editing) {
     return (
       <div
         style={{ animationDelay: `${animDelay}ms`, animationFillMode: 'both' }}
-        className="animate-fadeInUp card-magic bg-white border-castle-purple p-4 space-y-3"
+        className="animate-fadeInUp card-magic bg-white border-castle-purple p-4 space-y-3 col-span-2 md:col-span-4"
       >
-        {/* Emoji + Name row */}
+        {/* Emoji + Name */}
         <div className="flex gap-2 items-center">
-          {/* Emoji picker button */}
           <div className="relative flex-shrink-0">
             <button
               type="button"
@@ -136,37 +128,28 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
                 'text-3xl w-[48px] h-[48px] flex items-center justify-center',
                 'rounded-2xl border-2 bg-white transition-all duration-150',
                 'hover:scale-110 active:scale-95',
-                pickerOpen
-                  ? 'border-castle-purple ring-2 ring-castle-purple/30'
-                  : 'border-castle-purple-light',
+                pickerOpen ? 'border-castle-purple ring-2 ring-castle-purple/30' : 'border-castle-purple-light',
               ].join(' ')}
             >
               {editEmoji}
             </button>
-
             {pickerOpen && (
               <div className="absolute left-0 top-12 z-30 bg-white rounded-2xl shadow-xl border-2 border-castle-purple-light p-2 w-64">
                 <div className="grid grid-cols-8 gap-1">
                   {EMOJIS.map(e => (
                     <button
-                      key={e}
-                      type="button"
-                      onClick={() => handleEmojiPick(e)}
+                      key={e} type="button" onClick={() => handleEmojiPick(e)}
                       className={[
                         'text-xl p-1 rounded-xl transition-all duration-100 min-h-[32px] min-w-[32px]',
                         'hover:scale-125 active:scale-90',
                         editEmoji === e ? 'bg-castle-purple-pale ring-2 ring-castle-purple' : '',
                       ].join(' ')}
-                    >
-                      {e}
-                    </button>
+                    >{e}</button>
                   ))}
                 </div>
               </div>
             )}
           </div>
-
-          {/* Name input */}
           <input
             ref={editNameRef}
             value={editName}
@@ -182,7 +165,6 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
           />
         </div>
 
-        {/* Nut warning */}
         {editNutError && (
           <p className="font-body text-xs text-red-600 flex items-center gap-1">
             🚫 Nut-free school rule — try sunflower seeds or hummus instead!
@@ -193,13 +175,10 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
         <div className="flex flex-wrap gap-1.5">
           {CATEGORIES.map(c => (
             <button
-              key={c}
-              type="button"
-              onClick={() => handleCategoryChange(c)}
+              key={c} type="button" onClick={() => handleCategoryChange(c)}
               className={[
                 'px-3 py-1 rounded-full font-body font-bold capitalize text-xs',
-                'border-2 transition-all duration-150 min-h-[36px]',
-                'hover:scale-105 active:scale-95',
+                'border-2 transition-all duration-150 min-h-[36px] hover:scale-105 active:scale-95',
                 editCategory === c
                   ? 'bg-castle-purple text-white border-castle-purple'
                   : 'bg-white text-castle-purple border-castle-purple-light',
@@ -213,96 +192,89 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
         {/* Save / Cancel */}
         <div className="flex gap-2">
           <button
-            type="button"
-            onClick={saveEdit}
+            type="button" onClick={saveEdit}
             className="flex-1 bg-castle-purple text-white font-body font-bold px-4 py-2.5 rounded-2xl hover:bg-castle-purple/90 active:scale-95 transition-all min-h-[44px]"
-          >
-            ✅ Save
-          </button>
+          >✅ Save</button>
           <button
-            type="button"
-            onClick={cancelEdit}
+            type="button" onClick={cancelEdit}
             className="px-4 py-2.5 rounded-2xl font-body font-bold text-castle-purple border-2 border-castle-purple-light bg-white hover:bg-castle-purple-pale transition-all min-h-[44px]"
-          >
-            Cancel
-          </button>
+          >Cancel</button>
         </div>
       </div>
     )
   }
 
+  // ── View mode — compact vertical grid card ─────────────────────────────────
   return (
     <div
       style={{ animationDelay: `${animDelay}ms`, animationFillMode: 'both' }}
       className={[
-        'animate-fadeInUp',
-        'card-magic p-4 flex items-start gap-3',
-        food.inPantry
-          ? 'bg-white border-castle-purple-pale'
-          : 'bg-amber-50 border-amber-200',
+        'animate-fadeInUp card-magic flex flex-col p-3',
+        food.inPantry ? 'bg-white border-castle-purple-pale' : 'bg-amber-50 border-amber-200',
         removing ? 'opacity-0 scale-90 transition-all duration-300' : '',
         rateAnim  ? 'scale-105 transition-transform duration-200' : '',
       ].join(' ')}
     >
+      {/* Top row: edit + delete */}
+      <div className="flex justify-between mb-1">
+        <button
+          onClick={openEdit}
+          className="text-base hover:scale-125 active:scale-90 transition-transform text-castle-purple/40 hover:text-castle-purple p-1"
+          aria-label={`Edit ${food.name}`}
+        >✏️</button>
+        <button
+          onClick={handleDelete}
+          className="text-base hover:scale-125 active:scale-90 transition-transform text-rose-300 hover:text-rose-500 p-1"
+          aria-label={`Remove ${food.name}`}
+        >🗑️</button>
+      </div>
+
       {/* Emoji */}
-      <span
-        className={`text-4xl leading-none select-none animate-float ${!food.inPantry ? 'opacity-60' : ''}`}
-        style={{ animationDelay: `${animDelay * 0.5}ms` }}
+      <div className="flex justify-center my-1">
+        <span
+          className={`text-4xl leading-none select-none animate-float ${!food.inPantry ? 'opacity-60' : ''}`}
+          style={{ animationDelay: `${animDelay * 0.5}ms` }}
+        >
+          {food.emoji}
+        </span>
+      </div>
+
+      {/* Name */}
+      <p className="font-magic text-center text-sm text-castle-purple leading-tight mb-1 overflow-hidden"
+        style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
       >
-        {food.emoji}
-      </span>
+        {food.name}
+      </p>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="font-magic text-xl text-castle-purple truncate">{food.name}</p>
+      {/* Category badge */}
+      <div className="flex justify-center mb-2">
+        <span className={`text-xs font-body font-bold px-2 py-0.5 rounded-full border capitalize ${categoryColors[food.category]}`}>
+          {food.category}
+        </span>
+      </div>
 
-        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-          <span className={`inline-block text-xs font-body font-bold px-2 py-0.5 rounded-full border capitalize ${categoryColors[food.category]}`}>
-            {food.category}
-          </span>
-          {!food.inPantry && (
-            <span className="inline-block text-xs font-body font-bold px-2 py-0.5 rounded-full border bg-amber-100 text-amber-700 border-amber-300">
-              🛒 Need to buy
-            </span>
-          )}
-        </div>
-
-        <div className="mt-2">
-          <StarRating value={food.rating} onChange={handleRate} size="sm" />
-        </div>
+      {/* Stars */}
+      <div className="flex justify-center mb-3">
+        <StarRating value={food.rating} onChange={handleRate} size="sm" />
       </div>
 
       {/* Pantry toggle */}
-      <button
-        onClick={handlePantryToggle}
-        className={[
-          'min-h-[44px] min-w-[44px] flex items-center justify-center text-xl',
-          'hover:scale-125 active:scale-90 transition-transform',
-          food.inPantry ? 'text-green-500 hover:text-green-600' : 'text-amber-500 hover:text-amber-600',
-        ].join(' ')}
-        aria-label={food.inPantry ? 'Mark as not in pantry' : 'Mark as in pantry'}
-        title={food.inPantry ? 'In pantry — tap to mark as need to buy' : 'Need to buy — tap to mark as in pantry'}
-      >
-        {food.inPantry ? '🏠' : '🛒'}
-      </button>
-
-      {/* Edit */}
-      <button
-        onClick={openEdit}
-        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-xl hover:scale-125 active:scale-90 transition-transform text-castle-purple/50 hover:text-castle-purple"
-        aria-label={`Edit ${food.name}`}
-      >
-        ✏️
-      </button>
-
-      {/* Delete */}
-      <button
-        onClick={handleDelete}
-        className="min-h-[44px] min-w-[44px] flex items-center justify-center text-2xl hover:scale-125 active:scale-90 transition-transform text-rose-400 hover:text-rose-600"
-        aria-label={`Remove ${food.name}`}
-      >
-        🗑️
-      </button>
+      <div className="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
+        <span className="font-body text-xs font-semibold text-gray-500">In Pantry</span>
+        <button
+          onClick={handlePantryToggle}
+          role="switch"
+          aria-checked={food.inPantry}
+          aria-label={food.inPantry ? 'In pantry — tap to mark as need to buy' : 'Not in pantry — tap to mark as in pantry'}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${
+            food.inPantry ? 'bg-green-500' : 'bg-gray-300'
+          }`}
+        >
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+            food.inPantry ? 'translate-x-6' : 'translate-x-1'
+          }`} />
+        </button>
+      </div>
     </div>
   )
 }

@@ -230,38 +230,23 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
           </div>
 
           {/* Pantry toggle */}
-          <div>
-            <label className="block font-body font-bold text-castle-purple mb-2">
-              Do we have this at home? 🏠
-            </label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setInPantry(true)}
-                className={[
-                  'flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border-2',
-                  'font-body font-bold text-sm min-h-[44px] transition-all duration-150',
-                  inPantry
-                    ? 'bg-green-500 border-green-500 text-white'
-                    : 'bg-white border-castle-purple-light text-castle-purple hover:bg-green-50',
-                ].join(' ')}
-              >
-                🏠 Yes, in pantry!
-              </button>
-              <button
-                type="button"
-                onClick={() => setInPantry(false)}
-                className={[
-                  'flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border-2',
-                  'font-body font-bold text-sm min-h-[44px] transition-all duration-150',
-                  !inPantry
-                    ? 'bg-amber-500 border-amber-500 text-white'
-                    : 'bg-white border-castle-purple-light text-castle-purple hover:bg-amber-50',
-                ].join(' ')}
-              >
-                🛒 Need to buy
-              </button>
-            </div>
+          <div className="flex items-center justify-between bg-white rounded-2xl border-2 border-castle-purple-light px-4 py-3 min-h-[52px]">
+            <span className="font-body font-bold text-castle-purple">
+              In Pantry 🏠
+            </span>
+            <button
+              type="button"
+              onClick={() => setInPantry(p => !p)}
+              role="switch"
+              aria-checked={inPantry}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${
+                inPantry ? 'bg-green-500' : 'bg-gray-300'
+              }`}
+            >
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                inPantry ? 'translate-x-6' : 'translate-x-1'
+              }`} />
+            </button>
           </div>
 
           {/* Just-added confirmation */}
