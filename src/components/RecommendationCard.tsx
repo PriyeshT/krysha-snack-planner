@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { SnackCombo, Recipe, NewFood } from '@/lib/types'
 
 // ── Snack Pack ────────────────────────────────────────────────────────────────
@@ -70,12 +71,20 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
 }
 
 // ── Try New Food ──────────────────────────────────────────────────────────────
-export function NewFoodCard({ food, index }: { food: NewFood; index: number }) {
+export function NewFoodCard({ food, index, onAdd }: { food: NewFood; index: number; onAdd?: (food: NewFood) => void }) {
+  const [added, setAdded] = useState(false)
+
   const gradients = [
     'from-castle-pink-pale to-castle-purple-pale border-castle-pink',
     'from-castle-teal/10 to-blue-50 border-castle-teal',
     'from-castle-gold-light/30 to-castle-cream border-castle-gold',
   ]
+
+  const handleAdd = () => {
+    if (added || !onAdd) return
+    setAdded(true)
+    onAdd(food)
+  }
 
   return (
     <div
@@ -98,6 +107,23 @@ export function NewFoodCard({ food, index }: { food: NewFood; index: number }) {
           <p>{food.challenge}</p>
         </div>
       </div>
+
+      {onAdd && (
+        <button
+          onClick={handleAdd}
+          disabled={added}
+          className={[
+            'mt-4 w-full flex items-center justify-center gap-2',
+            'font-body font-bold text-sm px-4 py-2.5 rounded-2xl border-2',
+            'transition-all duration-200 min-h-[44px]',
+            added
+              ? 'bg-green-100 border-green-300 text-green-700 cursor-default'
+              : 'bg-white/80 border-castle-purple text-castle-purple hover:bg-castle-purple hover:text-white hover:scale-[1.02] active:scale-[0.98]',
+          ].join(' ')}
+        >
+          {added ? '✅ Added to My Kingdom!' : '⭐ Add to My Favourites!'}
+        </button>
+      )}
     </div>
   )
 }

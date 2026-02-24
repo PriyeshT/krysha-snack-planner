@@ -5,6 +5,7 @@ import { FoodItem, SnackPackResponse, GapSuggestion, FoodCategory } from '@/lib/
 import { getFoods, getFairyName, addFood, generateId } from '@/lib/storage'
 import MagicButton from '@/components/MagicButton'
 import { SnackComboCard } from '@/components/RecommendationCard'
+import CreditsErrorCard from '@/components/CreditsErrorCard'
 import Link from 'next/link'
 
 const COMPONENT_META: Record<string, { icon: string; colour: string; border: string; bg: string }> = {
@@ -113,9 +114,10 @@ function GapsSection({
 export default function SnackPackPage() {
   const [foods,     setFoods]     = useState<FoodItem[]>([])
   const [fairyName, setFairyName] = useState('Pixie')
-  const [result,    setResult]    = useState<SnackPackResponse | null>(null)
-  const [loading,   setLoading]   = useState(false)
-  const [error,     setError]     = useState('')
+  const [result,       setResult]       = useState<SnackPackResponse | null>(null)
+  const [loading,      setLoading]      = useState(false)
+  const [error,        setError]        = useState('')
+  const [creditsError, setCreditsError] = useState(false)
 
   const refreshFoods = () => setFoods(getFoods())
 
@@ -128,6 +130,7 @@ export default function SnackPackPage() {
     setLoading(true)
     setError('')
     setResult(null)
+    setCreditsError(false)
     try {
       const res = await fetch('/api/recommend', {
         method:  'POST',
@@ -135,6 +138,7 @@ export default function SnackPackPage() {
         body:    JSON.stringify({ type: 'snack-pack', foods, fairyName }),
       })
       const data: SnackPackResponse = await res.json()
+      if ((data as { creditsError?: boolean }).creditsError) { setCreditsError(true); return }
       setResult(data)
     } catch {
       setError(`${fairyName} got distracted by a rainbow! Please try again 🌈`)
@@ -198,6 +202,8 @@ export default function SnackPackPage() {
               {error}
             </div>
           )}
+
+          {creditsError && <CreditsErrorCard fairyName={fairyName} />}
 
           {result && (
             <div className="space-y-4 animate-fadeInUp">

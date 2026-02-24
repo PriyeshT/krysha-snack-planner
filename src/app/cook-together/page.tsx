@@ -5,14 +5,16 @@ import { FoodItem, CookTogetherResponse } from '@/lib/types'
 import { getFoods, getFairyName } from '@/lib/storage'
 import MagicButton from '@/components/MagicButton'
 import { RecipeCard } from '@/components/RecommendationCard'
+import CreditsErrorCard from '@/components/CreditsErrorCard'
 import Link from 'next/link'
 
 export default function CookTogetherPage() {
   const [foods,     setFoods]     = useState<FoodItem[]>([])
   const [fairyName, setFairyName] = useState('Pixie')
-  const [result,    setResult]    = useState<CookTogetherResponse | null>(null)
-  const [loading,   setLoading]   = useState(false)
-  const [error,     setError]     = useState('')
+  const [result,       setResult]       = useState<CookTogetherResponse | null>(null)
+  const [loading,      setLoading]      = useState(false)
+  const [error,        setError]        = useState('')
+  const [creditsError, setCreditsError] = useState(false)
 
   useEffect(() => {
     setFoods(getFoods())
@@ -23,6 +25,7 @@ export default function CookTogetherPage() {
     setLoading(true)
     setError('')
     setResult(null)
+    setCreditsError(false)
     try {
       const res = await fetch('/api/recommend', {
         method:  'POST',
@@ -30,6 +33,7 @@ export default function CookTogetherPage() {
         body:    JSON.stringify({ type: 'cook-together', foods, fairyName }),
       })
       const data: CookTogetherResponse = await res.json()
+      if ((data as { creditsError?: boolean }).creditsError) { setCreditsError(true); return }
       setResult(data)
     } catch {
       setError(`${fairyName} accidentally turned the recipe into glitter! Try again 🌟`)
@@ -88,6 +92,8 @@ export default function CookTogetherPage() {
               {error}
             </div>
           )}
+
+          {creditsError && <CreditsErrorCard fairyName={fairyName} />}
 
           {result && (
             <div className="space-y-4 animate-fadeInUp">

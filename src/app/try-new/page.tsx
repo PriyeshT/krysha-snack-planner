@@ -1,17 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { FoodItem, TryNewResponse } from '@/lib/types'
-import { getFoods, getFairyName } from '@/lib/storage'
+import { FoodItem, TryNewResponse, NewFood, FoodCategory } from '@/lib/types'
+import { getFoods, getFairyName, addFood, generateId } from '@/lib/storage'
 import MagicButton from '@/components/MagicButton'
 import { NewFoodCard } from '@/components/RecommendationCard'
+import CreditsErrorCard from '@/components/CreditsErrorCard'
 
 export default function TryNewPage() {
   const [foods,     setFoods]     = useState<FoodItem[]>([])
   const [fairyName, setFairyName] = useState('Pixie')
-  const [result,    setResult]    = useState<TryNewResponse | null>(null)
-  const [loading,   setLoading]   = useState(false)
-  const [error,     setError]     = useState('')
+  const [result,       setResult]       = useState<TryNewResponse | null>(null)
+  const [loading,      setLoading]      = useState(false)
+  const [error,        setError]        = useState('')
+  const [creditsError, setCreditsError] = useState(false)
 
   useEffect(() => {
     setFoods(getFoods())
@@ -22,6 +24,7 @@ export default function TryNewPage() {
     setLoading(true)
     setError('')
     setResult(null)
+    setCreditsError(false)
     try {
       const res = await fetch('/api/recommend', {
         method:  'POST',
@@ -29,12 +32,29 @@ export default function TryNewPage() {
         body:    JSON.stringify({ type: 'try-new', foods, fairyName }),
       })
       const data: TryNewResponse = await res.json()
+      if ((data as { creditsError?: boolean }).creditsError) { setCreditsError(true); return }
       setResult(data)
     } catch {
       setError(`${fairyName} flew too far into the enchanted forest! Try again 🌲✨`)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleAddFood = (food: NewFood) => {
+    const validCats: FoodCategory[] = ['fruit','veggie','protein','grain','dairy','snack','other']
+    const cat: FoodCategory = validCats.includes(food.category as FoodCategory)
+      ? food.category as FoodCategory
+      : 'other'
+    addFood({
+      id:        generateId(),
+      name:      food.name,
+      emoji:     food.emoji,
+      rating:    0,
+      dateAdded: new Date().toISOString(),
+      category:  cat,
+    })
+    setFoods(getFoods())
   }
 
   return (
@@ -83,6 +103,8 @@ export default function TryNewPage() {
         </div>
       )}
 
+      {creditsError && <CreditsErrorCard fairyName={fairyName} />}
+
       {result && (
         <div className="space-y-4 animate-fadeInUp">
           <div className="card-magic bg-gradient-to-r from-castle-pink to-castle-purple p-4 text-white text-center">
@@ -92,7 +114,7 @@ export default function TryNewPage() {
 
           <div className="grid gap-4">
             {result.newFoods?.map((food, i) => (
-              <NewFoodCard key={i} food={food} index={i} />
+              <NewFoodCard key={i} food={food} index={i} onAdd={handleAddFood} />
             ))}
           </div>
 

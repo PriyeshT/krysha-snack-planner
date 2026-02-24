@@ -148,7 +148,11 @@ export async function POST(req: NextRequest) {
   let fairyName = 'Pixie'
   try {
     const body: RecommendRequest = await req.json()
-    fairyName = body.fairyName || 'Pixie'
+    // Sanitise fairyName: strip chars that could break prompt JSON, cap at 30 chars
+    fairyName = (body.fairyName || 'Pixie')
+      .replace(/['"\\`\n\r{}[\]]/g, '')
+      .slice(0, 30)
+      .trim() || 'Pixie'
     const { type, foods } = body
 
     if (!type || !Array.isArray(foods)) {
@@ -179,11 +183,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data)
   } catch (err) {
     console.error('Fairy error:', err)
+    const message = (err as { message?: string })?.message ?? ''
+    const isCreditsError = message.includes('credit balance') || message.includes('insufficient_credits')
     return NextResponse.json(
       {
-        greeting:    `✨ Oops! ${fairyName} got her wings tangled! 🧚`,
-        error:       true,
-        closingNote: `Please try again in a moment! ${fairyName} is fixing her wand! 🪄`,
+        greeting: isCreditsError
+          ? `✨ ${fairyName}'s magic wand needs recharging! 🔋`
+          : `✨ Oops! ${fairyName} got her wings tangled! 🧚`,
+        error:        true,
+        creditsError: isCreditsError,
+        closingNote: isCreditsError
+          ? `Daddy needs to add credits at console.anthropic.com to power ${fairyName}'s magic! 💳`
+          : `Please try again in a moment! ${fairyName} is fixing her wand! 🪄`,
       },
       { status: 500 },
     )

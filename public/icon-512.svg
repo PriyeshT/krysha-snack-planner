@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="#6B21A8"/>
+  <!-- Castle base -->
+  <rect x="116" y="266" width="280" height="162" rx="16" fill="#F3E8FF"/>
+  <!-- Castle door -->
+  <rect x="218" y="320" width="76" height="108" rx="38" fill="#9333EA"/>
+  <!-- Castle towers -->
+  <rect x="94" y="190" width="80" height="136" rx="10" fill="#F3E8FF"/>
+  <rect x="338" y="190" width="80" height="136" rx="10" fill="#F3E8FF"/>
+  <!-- Tower merlons left -->
+  <rect x="94"  y="162" width="22" height="36" rx="4" fill="#F3E8FF"/>
+  <rect x="126" y="162" width="22" height="36" rx="4" fill="#F3E8FF"/>
+  <rect x="158" y="162" width="16" height="36" rx="4" fill="#F3E8FF"/>
+  <!-- Tower merlons right -->
+  <rect x="338" y="162" width="22" height="36" rx="4" fill="#F3E8FF"/>
+  <rect x="370" y="162" width="22" height="36" rx="4" fill="#F3E8FF"/>
+  <rect x="402" y="162" width="16" height="36" rx="4" fill="#F3E8FF"/>
+  <!-- Flag pole + flag -->
+  <line x1="134" y1="162" x2="134" y2="96" stroke="#FCD34D" stroke-width="6" stroke-linecap="round"/>
+  <polygon points="134,96 192,116 134,136" fill="#FCD34D"/>
+  <!-- Sparkles -->
+  <text x="268" y="148" font-size="60" text-anchor="middle" fill="#FCD34D">✨</text>
+  <text x="408" y="240" font-size="40" text-anchor="middle" fill="#E879F9">⭐</text>
+  <text x="80"  y="140" font-size="32" text-anchor="middle" fill="#FCD34D">✦</text>
+  <text x="440" y="120" font-size="28" text-anchor="middle" fill="#FCD34D">✦</text>
+</svg>

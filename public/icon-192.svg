@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <!-- Background -->
+  <rect width="192" height="192" rx="36" fill="#6B21A8"/>
+  <!-- Castle base -->
+  <rect x="44" y="100" width="104" height="60" rx="6" fill="#F3E8FF"/>
+  <!-- Castle door -->
+  <rect x="82" y="120" width="28" height="40" rx="14" fill="#9333EA"/>
+  <!-- Castle towers -->
+  <rect x="36" y="72" width="30" height="50" rx="4" fill="#F3E8FF"/>
+  <rect x="126" y="72" width="30" height="50" rx="4" fill="#F3E8FF"/>
+  <!-- Tower tops (merlons) -->
+  <rect x="36" y="62" width="8" height="14" rx="2" fill="#F3E8FF"/>
+  <rect x="50" y="62" width="8" height="14" rx="2" fill="#F3E8FF"/>
+  <rect x="126" y="62" width="8" height="14" rx="2" fill="#F3E8FF"/>
+  <rect x="140" y="62" width="8" height="14" rx="2" fill="#F3E8FF"/>
+  <!-- Flag -->
+  <line x1="51" y1="62" x2="51" y2="36" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
+  <polygon points="51,36 72,44 51,52" fill="#FCD34D"/>
+  <!-- Stars / sparkles -->
+  <text x="100" y="55" font-size="22" text-anchor="middle" fill="#FCD34D">✨</text>
+  <text x="152" y="90" font-size="14" text-anchor="middle" fill="#E879F9">⭐</text>
+  <text x="30" y="52" font-size="12" text-anchor="middle" fill="#FCD34D">✦</text>
+</svg>

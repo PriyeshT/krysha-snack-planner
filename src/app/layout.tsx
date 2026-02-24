@@ -5,6 +5,16 @@ import NavBar from '@/components/NavBar'
 export const metadata: Metadata = {
   title: "Krysha's Snack Kingdom ✨",
   description: 'A magical place for Krysha and Daddy to plan healthy, yummy snacks together!',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable:           true,
+    statusBarStyle:    'black-translucent',
+    title:             "Snack Kingdom",
+  },
+  icons: {
+    icon:  '/icon-192.svg',
+    apple: '/icon-192.svg',
+  },
 }
 
 export default function RootLayout({
@@ -13,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="theme-color" content="#6B21A8" />
         <link
           rel="preconnect"
           href="https://fonts.googleapis.com"

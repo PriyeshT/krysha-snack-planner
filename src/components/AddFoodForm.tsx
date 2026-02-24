@@ -175,7 +175,8 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
                 ref={nameRef}
                 value={name}
                 onChange={e => setName(e.target.value)}
-                placeholder="e.g. Seaweed, Mango, Yogurt…"
+                maxLength={50}
+                placeholder="e.g. Wholegrain crackers, Dragon fruit…"
                 className={[
                   'flex-1 rounded-2xl border-2 border-castle-purple-light',
                   'px-4 py-2 font-body text-lg text-black focus:outline-none focus:border-castle-purple',
