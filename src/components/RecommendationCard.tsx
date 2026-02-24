@@ -33,6 +33,16 @@ export function SnackComboCard({ combo, index }: { combo: SnackCombo; index: num
 
 // ── Cook Together ─────────────────────────────────────────────────────────────
 export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number }) {
+  const missing = recipe.missingIngredients ?? []
+
+  const isMissing = (ing: string) =>
+    missing.some(m =>
+      ing.toLowerCase().includes(m.toLowerCase()) ||
+      m.toLowerCase().includes(ing.toLowerCase())
+    )
+
+  const hasMissing = missing.length > 0
+
   return (
     <div
       style={{ animationDelay: `${index * 140}ms`, animationFillMode: 'both' }}
@@ -46,11 +56,35 @@ export function RecipeCard({ recipe, index }: { recipe: Recipe; index: number })
       </div>
 
       <div className="mb-3">
-        <p className="font-body font-bold text-sm text-castle-purple mb-1">🧺 You need:</p>
-        <ul className="space-y-0.5 pl-4">
-          {recipe.ingredients.map((ing, i) => (
-            <li key={i} className="font-body text-sm list-disc text-gray-700">{ing}</li>
-          ))}
+        <div className="flex items-center justify-between mb-1">
+          <p className="font-body font-bold text-sm text-castle-purple">🧺 You need:</p>
+          {hasMissing && (
+            <span className="text-xs font-body font-bold text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">
+              🛒 some shopping needed
+            </span>
+          )}
+        </div>
+        <ul className="space-y-1">
+          {recipe.ingredients.map((ing, i) => {
+            const needsToBuy = isMissing(ing)
+            return (
+              <li
+                key={i}
+                className={[
+                  'font-body text-sm flex items-center gap-2 px-2 py-1 rounded-lg',
+                  needsToBuy
+                    ? 'bg-amber-50 border border-amber-200 text-amber-800'
+                    : 'text-gray-700',
+                ].join(' ')}
+              >
+                <span>{needsToBuy ? '🛒' : '✅'}</span>
+                <span>{ing}</span>
+                {needsToBuy && (
+                  <span className="ml-auto text-xs text-amber-600 font-bold">need to buy</span>
+                )}
+              </li>
+            )
+          })}
         </ul>
       </div>
 

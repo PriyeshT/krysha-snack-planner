@@ -59,6 +59,11 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
     setTimeout(() => { setRateAnim(false); onMutate() }, 350)
   }
 
+  const handlePantryToggle = () => {
+    updateFood(food.id, { inPantry: !food.inPantry })
+    onMutate()
+  }
+
   const handleDelete = () => {
     setRemoving(true)
     setTimeout(() => { deleteFood(food.id); onMutate() }, 350)
@@ -231,14 +236,19 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
       style={{ animationDelay: `${animDelay}ms`, animationFillMode: 'both' }}
       className={[
         'animate-fadeInUp',
-        'card-magic bg-white border-castle-purple-pale',
-        'p-4 flex items-start gap-3',
+        'card-magic p-4 flex items-start gap-3',
+        food.inPantry
+          ? 'bg-white border-castle-purple-pale'
+          : 'bg-amber-50 border-amber-200',
         removing ? 'opacity-0 scale-90 transition-all duration-300' : '',
         rateAnim  ? 'scale-105 transition-transform duration-200' : '',
       ].join(' ')}
     >
       {/* Emoji */}
-      <span className="text-4xl leading-none select-none animate-float" style={{ animationDelay: `${animDelay * 0.5}ms` }}>
+      <span
+        className={`text-4xl leading-none select-none animate-float ${!food.inPantry ? 'opacity-60' : ''}`}
+        style={{ animationDelay: `${animDelay * 0.5}ms` }}
+      >
         {food.emoji}
       </span>
 
@@ -246,14 +256,35 @@ export default function FoodCard({ food, onMutate, animDelay = 0 }: FoodCardProp
       <div className="flex-1 min-w-0">
         <p className="font-magic text-xl text-castle-purple truncate">{food.name}</p>
 
-        <span className={`inline-block text-xs font-body font-bold px-2 py-0.5 rounded-full border mt-1 capitalize ${categoryColors[food.category]}`}>
-          {food.category}
-        </span>
+        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+          <span className={`inline-block text-xs font-body font-bold px-2 py-0.5 rounded-full border capitalize ${categoryColors[food.category]}`}>
+            {food.category}
+          </span>
+          {!food.inPantry && (
+            <span className="inline-block text-xs font-body font-bold px-2 py-0.5 rounded-full border bg-amber-100 text-amber-700 border-amber-300">
+              🛒 Need to buy
+            </span>
+          )}
+        </div>
 
         <div className="mt-2">
           <StarRating value={food.rating} onChange={handleRate} size="sm" />
         </div>
       </div>
+
+      {/* Pantry toggle */}
+      <button
+        onClick={handlePantryToggle}
+        className={[
+          'min-h-[44px] min-w-[44px] flex items-center justify-center text-xl',
+          'hover:scale-125 active:scale-90 transition-transform',
+          food.inPantry ? 'text-green-500 hover:text-green-600' : 'text-amber-500 hover:text-amber-600',
+        ].join(' ')}
+        aria-label={food.inPantry ? 'Mark as not in pantry' : 'Mark as in pantry'}
+        title={food.inPantry ? 'In pantry — tap to mark as need to buy' : 'Need to buy — tap to mark as in pantry'}
+      >
+        {food.inPantry ? '🏠' : '🛒'}
+      </button>
 
       {/* Edit */}
       <button

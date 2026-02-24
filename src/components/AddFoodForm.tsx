@@ -35,6 +35,7 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
   const [emoji,        setEmoji]        = useState(CATEGORY_DEFAULT_EMOJI['fruit'])
   const [emojiManual,  setEmojiManual]  = useState(false)
   const [category,     setCategory]     = useState<FoodCategory>('fruit')
+  const [inPantry,     setInPantry]     = useState(true)
   const [pickerOpen,   setPickerOpen]   = useState(false)
   const [shake,        setShake]        = useState(false)
   const [nutError,     setNutError]     = useState(false)
@@ -81,11 +82,12 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
       rating:    0,
       dateAdded: new Date().toISOString(),
       category,
+      inPantry,
     }
     addFood(food)
     onAdded()
 
-    // Flash confirmation then clear just the name — keep category/emoji for next item
+    // Flash confirmation then clear just the name — keep category/emoji/pantry for next item
     setJustAdded({ emoji, name: name.trim() })
     setTimeout(() => setJustAdded(null), 2000)
 
@@ -101,6 +103,7 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
     setEmoji(CATEGORY_DEFAULT_EMOJI['fruit'])
     setEmojiManual(false)
     setCategory('fruit')
+    setInPantry(true)
     setPickerOpen(false)
     setJustAdded(null)
   }
@@ -223,6 +226,41 @@ export default function AddFoodForm({ onAdded }: AddFoodFormProps) {
                   {CATEGORY_DEFAULT_EMOJI[c]} {c}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Pantry toggle */}
+          <div>
+            <label className="block font-body font-bold text-castle-purple mb-2">
+              Do we have this at home? 🏠
+            </label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setInPantry(true)}
+                className={[
+                  'flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border-2',
+                  'font-body font-bold text-sm min-h-[44px] transition-all duration-150',
+                  inPantry
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'bg-white border-castle-purple-light text-castle-purple hover:bg-green-50',
+                ].join(' ')}
+              >
+                🏠 Yes, in pantry!
+              </button>
+              <button
+                type="button"
+                onClick={() => setInPantry(false)}
+                className={[
+                  'flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border-2',
+                  'font-body font-bold text-sm min-h-[44px] transition-all duration-150',
+                  !inPantry
+                    ? 'bg-amber-500 border-amber-500 text-white'
+                    : 'bg-white border-castle-purple-light text-castle-purple hover:bg-amber-50',
+                ].join(' ')}
+              >
+                🛒 Need to buy
+              </button>
             </div>
           </div>
 

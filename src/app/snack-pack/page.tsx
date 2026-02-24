@@ -48,6 +48,7 @@ function GapsSection({
       rating:    0,
       dateAdded: new Date().toISOString(),
       category,
+      inPantry:  true,
     })
     setAdded(prev => ({ ...prev, [key]: true }))
     onAdded()
@@ -126,6 +127,8 @@ export default function SnackPackPage() {
     setFairyName(getFairyName())
   }, [])
 
+  const pantryFoods = foods.filter(f => f.inPantry)
+
   const askFairy = async () => {
     setLoading(true)
     setError('')
@@ -167,25 +170,29 @@ export default function SnackPackPage() {
         </div>
       </div>
 
-      {foods.length === 0 ? (
+      {pantryFoods.length === 0 ? (
         <div className="card-magic bg-castle-purple-pale border-castle-purple-light p-8 text-center">
           <p className="text-5xl mb-3 animate-bounce_magic">🌟</p>
-          <p className="font-magic text-2xl text-castle-purple mb-2">Your kingdom needs food first!</p>
+          <p className="font-magic text-2xl text-castle-purple mb-2">
+            {foods.length === 0 ? 'Your kingdom needs food first!' : 'Nothing in the pantry yet!'}
+          </p>
           <p className="font-body text-castle-purple/70 mb-5">
-            Add some of your favourite foods so {fairyName} knows what to pack!
+            {foods.length === 0
+              ? `Add some of your favourite foods so ${fairyName} knows what to pack!`
+              : `Mark some foods as 🏠 "in pantry" so ${fairyName} can pack your snack box!`}
           </p>
           <Link href="/favorites">
-            <MagicButton>⭐ Add My Favourites!</MagicButton>
+            <MagicButton>⭐ {foods.length === 0 ? 'Add My Favourites!' : 'Update My Pantry!'}</MagicButton>
           </Link>
         </div>
       ) : (
         <>
           <div className="card-magic bg-white border-castle-purple-light p-4">
             <p className="font-body font-bold text-castle-purple mb-2">
-              🧺 {fairyName} will use your {foods.length} favourite food{foods.length !== 1 ? 's' : ''}:
+              🏠 {fairyName} will pack with your {pantryFoods.length} pantry item{pantryFoods.length !== 1 ? 's' : ''}:
             </p>
             <div className="flex flex-wrap gap-2">
-              {foods.map(f => (
+              {pantryFoods.map(f => (
                 <span key={f.id} className="bg-castle-purple-pale text-castle-purple text-sm font-body font-semibold px-3 py-1 rounded-full border border-castle-purple-light">
                   {f.emoji} {f.name}
                 </span>

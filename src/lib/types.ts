@@ -14,6 +14,7 @@ export interface FoodItem {
   rating:    number       // 0 = unrated, 1–5
   dateAdded: string       // ISO string
   category:  FoodCategory
+  inPantry:  boolean      // true = we have this at home right now
 }
 
 export type RecommendationType = 'snack-pack' | 'cook-together' | 'try-new' | 'suggest-favorites'
@@ -46,11 +47,12 @@ export interface SnackPackResponse {
 
 // ── Cook Together ─────────────────────────────────────────────────────────────
 export interface Recipe {
-  name:        string
-  emoji:       string
-  ingredients: string[]
-  steps:       string[]
-  funFact:     string
+  name:                string
+  emoji:               string
+  ingredients:         string[]
+  missingIngredients:  string[]  // ingredient names not currently in pantry
+  steps:               string[]
+  funFact:             string
 }
 
 export interface CookTogetherResponse {

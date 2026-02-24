@@ -11,7 +11,10 @@ export function getFoods(): FoodItem[] {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return []
-    return JSON.parse(raw) as FoodItem[]
+    type Stored = Omit<FoodItem, 'inPantry'> & { inPantry?: boolean }
+    const items = JSON.parse(raw) as Stored[]
+    // Migrate: existing items without inPantry default to true
+    return items.map(f => ({ ...f, inPantry: f.inPantry ?? true }))
   } catch {
     return []
   }

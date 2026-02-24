@@ -53,6 +53,7 @@ export default function TryNewPage() {
       rating:    0,
       dateAdded: new Date().toISOString(),
       category:  cat,
+      inPantry:  false,
     })
     setFoods(getFoods())
   }

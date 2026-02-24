@@ -87,6 +87,7 @@ export default function SuggestionsPanel({ existingFoods, onAdded }: Suggestions
         rating:    0,
         dateAdded: new Date().toISOString(),
         category:  cat,
+        inPantry:  false,
       })
     })
     setAddedAnim(true)

@@ -10,15 +10,19 @@ function buildSystem(fairyName: string): string {
 ${NUT_FREE_PROMPT_RULE}`
 }
 
-function foodList(foods: FoodItem[]): string {
+function foodList(foods: FoodItem[], showPantry = false): string {
   return foods
-    .map(f => `- ${f.emoji} ${f.name} (${f.category}, rated ${f.rating === 0 ? 'not rated yet' : `${f.rating}/5 stars`})`)
+    .map(f => {
+      const pantryTag = showPantry ? (f.inPantry ? ' ✅ in pantry' : ' 🛒 need to buy') : ''
+      return `- ${f.emoji} ${f.name} (${f.category}, rated ${f.rating === 0 ? 'not rated yet' : `${f.rating}/5 stars`}${pantryTag})`
+    })
     .join('\n')
 }
 
 function snackPackPrompt(foods: FoodItem[], fairyName: string): string {
-  return `Krysha has these favourite foods:
-${foodList(foods)}
+  const pantryFoods = foods.filter(f => f.inPantry)
+  return `Krysha has these favourite foods AVAILABLE IN HER PANTRY RIGHT NOW:
+${foodList(pantryFoods)}
 
 🚫 NUT-FREE: Krysha's school bans ALL nuts. Never include peanuts, peanut butter, almonds, cashews, walnuts, or any nut product in combos or gap suggestions.
 
@@ -62,10 +66,24 @@ Each gap's "suggestions" must have 2–3 items, Singapore-friendly and kid-appro
 }
 
 function cookTogetherPrompt(foods: FoodItem[], fairyName: string): string {
-  return `Krysha has these favourite foods:
-${foodList(foods)}
+  const pantryFoods = foods.filter(f => f.inPantry)
+  const shoppingFoods = foods.filter(f => !f.inPantry)
 
-Create 2–3 simple recipes a 5-year-old and daddy can make together using these foods.
+  const pantrySection = pantryFoods.length > 0
+    ? `IN THE PANTRY (can use right now):\n${foodList(pantryFoods)}`
+    : 'IN THE PANTRY: (none yet)'
+
+  const shoppingSection = shoppingFoods.length > 0
+    ? `NEED TO BUY (daddy would need to shop for these):\n${foodList(shoppingFoods)}`
+    : ''
+
+  return `Krysha's favourite foods:
+${pantrySection}
+${shoppingSection}
+
+Create 2–3 simple recipes a 5-year-old and daddy can make together. You may use ALL the foods (pantry + need-to-buy) for recipe ideas — use creativity!
+
+For each recipe, include a "missingIngredients" array listing the names of any recipe ingredients that daddy would need to buy (i.e. they match a food marked as "need to buy" above, OR are a new ingredient not in her list at all). Use short names that match the ingredient strings exactly.
 
 Respond with ONLY this JSON (no markdown):
 {
@@ -75,6 +93,7 @@ Respond with ONLY this JSON (no markdown):
       "name": "Recipe name",
       "emoji": "single emoji",
       "ingredients": ["ingredient 1", "ingredient 2"],
+      "missingIngredients": ["ingredient 2"],
       "steps": ["Step 1 text", "Step 2 text"],
       "funFact": "A short magical fun fact about one ingredient"
     }
