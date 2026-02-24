@@ -40,7 +40,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <NavBar />
-        <main className="max-w-2xl mx-auto px-4 pt-6 page-content">
+        <main className="max-w-7xl mx-auto px-4 pt-6 page-content">
           {children}
         </main>
 
