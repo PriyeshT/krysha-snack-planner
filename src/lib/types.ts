@@ -16,7 +16,7 @@ export interface FoodItem {
   category:  FoodCategory
 }
 
-export type RecommendationType = 'snack-pack' | 'cook-together' | 'try-new'
+export type RecommendationType = 'snack-pack' | 'cook-together' | 'try-new' | 'suggest-favorites'
 
 export interface RecommendRequest {
   type:       RecommendationType
@@ -49,6 +49,20 @@ export interface Recipe {
 export interface CookTogetherResponse {
   greeting:    string
   recipes:     Recipe[]
+  closingNote: string
+}
+
+// ── Suggest Favorites ─────────────────────────────────────────────────────────
+export interface SuggestedFood {
+  name:         string
+  emoji:        string
+  category:     FoodCategory
+  whySuggested: string  // short kid-friendly reason
+}
+
+export interface SuggestFavoritesResponse {
+  greeting:    string
+  suggestions: SuggestedFood[]
   closingNote: string
 }
 

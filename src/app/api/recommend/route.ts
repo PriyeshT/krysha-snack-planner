@@ -79,6 +79,35 @@ Respond with ONLY this JSON (no markdown):
 }`
 }
 
+function suggestFavoritesPrompt(foods: FoodItem[], fairyName: string): string {
+  const existing = foods.length > 0
+    ? `Krysha already loves these foods (do NOT suggest any of these):\n${foodList(foods)}`
+    : 'Krysha has not added any favourite foods yet.'
+
+  return `${existing}
+
+Krysha is a 5-year-old girl living in Singapore. Suggest exactly 20 healthy, kid-friendly foods that would be easy to find in Singapore supermarkets (FairPrice, Cold Storage, Giant) or hawker centres. Include a good mix of:
+- Local Singapore favourites (e.g. dragon fruit, rambutan, kai lan, tau kwa, edamame, cincau)
+- Common international foods available in Singapore
+- Healthy snacks popular with Singapore kids
+
+Make sure NONE of the suggestions are already in Krysha's existing list above.
+
+Respond with ONLY this JSON (no markdown):
+{
+  "greeting": "A magical 1-2 sentence greeting from ${fairyName} about discovering yummy Singapore foods",
+  "suggestions": [
+    {
+      "name": "Food name",
+      "emoji": "single emoji",
+      "category": "fruit|veggie|protein|grain|dairy|snack|other",
+      "whySuggested": "One short fun sentence about why Krysha might love this"
+    }
+  ],
+  "closingNote": "A magical 1-sentence encouragement to try new foods"
+}`
+}
+
 function stripFences(text: string): string {
   return text
     .replace(/^```(?:json)?\n?/m, '')
@@ -99,16 +128,17 @@ export async function POST(req: NextRequest) {
 
     let userPrompt: string
     switch (type) {
-      case 'snack-pack':    userPrompt = snackPackPrompt(foods, fairyName);    break
-      case 'cook-together': userPrompt = cookTogetherPrompt(foods, fairyName); break
-      case 'try-new':       userPrompt = tryNewPrompt(foods, fairyName);       break
+      case 'snack-pack':        userPrompt = snackPackPrompt(foods, fairyName);        break
+      case 'cook-together':     userPrompt = cookTogetherPrompt(foods, fairyName);     break
+      case 'try-new':           userPrompt = tryNewPrompt(foods, fairyName);           break
+      case 'suggest-favorites': userPrompt = suggestFavoritesPrompt(foods, fairyName); break
       default:
         return NextResponse.json({ error: 'Unknown type' }, { status: 400 })
     }
 
     const message = await client.messages.create({
       model:      'claude-haiku-4-5-20251001',
-      max_tokens: 1024,
+      max_tokens: 2048,
       system:     buildSystem(fairyName),
       messages:   [{ role: 'user', content: userPrompt }],
     })

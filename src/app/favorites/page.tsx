@@ -5,6 +5,7 @@ import { FoodItem } from '@/lib/types'
 import { getFoods } from '@/lib/storage'
 import AddFoodForm from '@/components/AddFoodForm'
 import FoodCard from '@/components/FoodCard'
+import SuggestionsPanel from '@/components/SuggestionsPanel'
 
 const CATEGORY_ORDER = ['fruit','veggie','protein','grain','dairy','snack','other']
 
@@ -35,6 +36,9 @@ export default function FavouritesPage() {
 
       {/* Add form */}
       <AddFoodForm onAdded={refresh} />
+
+      {/* AI Singapore suggestions */}
+      <SuggestionsPanel existingFoods={foods} onAdded={refresh} />
 
       {/* Category filter pills */}
       {categories.length > 1 && (
