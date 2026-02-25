@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { FoodItem } from '@/lib/types'
 import { getFoods } from '@/lib/storage'
 import AddFoodForm from '@/components/AddFoodForm'
+import BackupPanel from '@/components/BackupPanel'
 import FoodCard from '@/components/FoodCard'
 import SuggestionsPanel from '@/components/SuggestionsPanel'
 
@@ -39,6 +40,9 @@ export default function FavouritesPage() {
 
       {/* AI Singapore suggestions */}
       <SuggestionsPanel existingFoods={foods} onAdded={refresh} />
+
+      {/* Backup & Restore */}
+      <BackupPanel onRestored={refresh} />
 
       {/* Category filter pills */}
       {categories.length > 1 && (
