@@ -1,4 +1,5 @@
 import { FoodItem } from './types'
+import { containsNut } from './nuts'
 
 const KEY = 'krysha_snacks_v1'
 
@@ -54,4 +55,54 @@ export function getFairyName(): string {
 export function saveFairyName(name: string): void {
   if (!isClient()) return
   localStorage.setItem(FAIRY_KEY, name.trim() || DEFAULT_FAIRY_NAME)
+}
+
+// ── Backup / Restore ──────────────────────────────────────────────────────────
+
+export interface BackupFile {
+  version:    number
+  exportedAt: string
+  fairyName:  string
+  foods:      FoodItem[]
+}
+
+export function exportBackup(): void {
+  if (!isClient()) return
+  const data: BackupFile = {
+    version:    1,
+    exportedAt: new Date().toISOString(),
+    fairyName:  getFairyName(),
+    foods:      getFoods(),
+  }
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+  const url  = URL.createObjectURL(blob)
+  const date = new Date().toISOString().slice(0, 10)
+  const a    = document.createElement('a')
+  a.href     = url
+  a.download = `krysha-snacks-${date}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+export function validateBackup(raw: unknown): { ok: true; data: BackupFile } | { ok: false; error: string } {
+  if (!raw || typeof raw !== 'object') return { ok: false, error: 'File is not valid JSON.' }
+  const d = raw as Record<string, unknown>
+  if (d.version !== 1) return { ok: false, error: 'Unrecognised backup version.' }
+  if (typeof d.fairyName !== 'string') return { ok: false, error: 'Missing fairy name in backup.' }
+  if (!Array.isArray(d.foods)) return { ok: false, error: 'Missing foods list in backup.' }
+  const invalid = (d.foods as unknown[]).find(
+    f => !f || typeof f !== 'object' ||
+      typeof (f as Record<string, unknown>).id !== 'string' ||
+      typeof (f as Record<string, unknown>).name !== 'string' ||
+      typeof (f as Record<string, unknown>).emoji !== 'string'
+  )
+  if (invalid) return { ok: false, error: 'Backup contains malformed food entries.' }
+  const nutFood = (d.foods as FoodItem[]).find(f => containsNut(f.name))
+  if (nutFood) return { ok: false, error: `Backup contains a nut product ("${nutFood.name}") and cannot be restored.` }
+  return { ok: true, data: d as unknown as BackupFile }
+}
+
+export function restoreBackup(backup: BackupFile): void {
+  saveFoods(backup.foods)
+  saveFairyName(backup.fairyName)
 }
